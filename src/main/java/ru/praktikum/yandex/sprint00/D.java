@@ -1,12 +1,12 @@
 package ru.praktikum.yandex.sprint00;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class D {
 
@@ -49,7 +49,7 @@ public class D {
     }
 
     private static List<Integer> readList(BufferedReader reader) throws IOException {
-        return  Arrays.asList(reader.readLine().split(" "))
+        return Arrays.asList(reader.readLine().split(" "))
                 .stream()
                 .map(elem -> Integer.parseInt(elem))
                 .collect(Collectors.toList());

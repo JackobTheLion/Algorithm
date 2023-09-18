@@ -19,10 +19,10 @@ public class C {
         if (row < matrix.size() - 1) {
             result.add(matrix.get(row + 1).get(col));
         }
-        if(col > 0) {
+        if (col > 0) {
             result.add(matrix.get(row).get(col - 1));
         }
-        if(col < matrix.get(row).size() - 1) {
+        if (col < matrix.get(row).size() - 1) {
             result.add(matrix.get(row).get(col + 1));
         }
         return result.stream().sorted(Integer::compareTo).collect(Collectors.toList());

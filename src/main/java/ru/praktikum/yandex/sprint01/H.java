@@ -57,7 +57,8 @@ public class H {
                         sb.append("0");
                     }
                 }
-            }        }
+            }
+        }
 
         if (bRight < 0) {
             for (int i = aRight; i >= 0; i--) {

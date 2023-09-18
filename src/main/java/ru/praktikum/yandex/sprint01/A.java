@@ -17,6 +17,4 @@ public class A {
         System.out.println(evaluateFunction(a, b, c, x));
         scanner.close();
     }
-
-
 }

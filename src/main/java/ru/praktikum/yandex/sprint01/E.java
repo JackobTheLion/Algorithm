@@ -13,9 +13,9 @@ public class E {
         String longestWord = "";
         int longestWordLength = 0;
 
-        for(int i = 0; i < strings.length; i++) {
-            if (strings[i].length() > longestWordLength) {
-                longestWord = strings[i];
+        for (String string : strings) {
+            if (string.length() > longestWordLength) {
+                longestWord = string;
                 longestWordLength = longestWord.length();
             }
         }

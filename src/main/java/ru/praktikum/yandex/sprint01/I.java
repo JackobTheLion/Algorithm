@@ -8,21 +8,21 @@ import java.io.InputStreamReader;
 public class I {
 
     private static boolean isPowerOfFour(int n) {
-        //if (n == 1) return true;
+/*        if (n == 1) return true;
 
         while (n % 4 == 0) {
             n /= 4;
-            if (n / 4 == 1) {
+            if ((n / 4 == 1 && n % 4 == 1) || n == 1) {
                 return true;
             }
-        }
-        return false;
+        }*/
+
+        return ((n & (n - 1)) == 0) && (n % 3 == 1);
     }
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            //int n = readInt(reader);
-            int n = 4;
+            int n = readInt(reader);
 
             if (isPowerOfFour(n)) {
                 System.out.println("True");
