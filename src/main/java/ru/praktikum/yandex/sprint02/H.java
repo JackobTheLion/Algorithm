@@ -3,10 +3,7 @@ package ru.praktikum.yandex.sprint02;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Stack;
 
 public class H {
 
@@ -16,22 +13,22 @@ public class H {
         }
 
         char[] bracesArr = braces.toCharArray();
-        Deque<Character> bracesStack = new LinkedList<>();
+        Stack<Character> bracesStack = new Stack<>();
 
         for (char c : bracesArr) {
             if (c == '{' || c == '(' || c == '[') {
-                bracesStack.addFirst(c);
+                bracesStack.add(c);
             } else {
-                if (!bracesStack.isEmpty() && ((bracesStack.peekFirst() == '{' && c == '}')
-                        || (bracesStack.peekFirst() == '[' && c == ']')
-                        || (bracesStack.peekFirst() == '(' && c == ')'))) {
-                    bracesStack.removeFirst();
+                if (!bracesStack.empty() && ((bracesStack.peek() == '{' && c == '}')
+                        || (bracesStack.peek() == '[' && c == ']')
+                        || (bracesStack.peek() == '(' && c == ')'))) {
+                    bracesStack.pop();
                 } else {
                     return false;
                 }
             }
         }
-        return bracesStack.isEmpty();
+        return bracesStack.empty();
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,18 +41,5 @@ public class H {
                 System.out.println("False");
             }
         }
-    }
-
-    private static int readInt(BufferedReader reader) throws IOException {
-        return Integer.parseInt(reader.readLine());
-    }
-
-    private static List<String> readCommands(BufferedReader reader, int lines) throws IOException {
-        List<String> commands = new ArrayList<>();
-        for (int i = 1; i <= lines; i++) {
-            String line = reader.readLine();
-            commands.add(line);
-        }
-        return commands;
     }
 }
