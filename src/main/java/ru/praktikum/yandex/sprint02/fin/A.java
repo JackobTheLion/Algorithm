@@ -6,40 +6,80 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+// id посылки: 91027582
+// Стоит ли писать разметку JavaDoc (переносы по крайней мере) или так достаточно удобно читать?
+
+/**
+ * -- ПРИНЦИП РАБОТЫ--
+ * По условию задачи, дек основан на кольцевом буфере. В своей реализации я использовал массив с фиксированной длиной.
+ * Инвариантом является то, что голова (head) и хвост (tail) всегда указывают на крайние элементы (не обрамляют их).
+ * При добавлении элемента:
+ * - в голову дека значение головы уменьшается;
+ * - в хвост дека значение хвоста увеличивается.
+ * Другими словами tail движется по часовой стрелке при добавлении и против при извлечении,
+ * а head против часовой при добавлении и по часовой при извлечении.
+ *
+ * Если в массиве одно значение, то head == tail, при извлечении равенство сохраняется.
+ *
+ * Когда:
+ * - head = 0 и добавляется новый элемент, то head = max - 1;
+ * - head = max - 1 и извлечении первого элемента, то head = 0;
+ * - tail = max - 1 и добавлении нового элемента, то tail = 0;
+ * - tail = 0 и извлекается последний элемент, то tail = max - 1;
+ * Это позволяет "закольцевать" массив.
+ *
+ * Если на момент извлечения массив пуст, возвращается null.
+ *
+ * -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+ *
+ *
+ * -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+ * Т.к. "под капотом" стоит массив, а операции извлечения и добавления выполняются по индексу, то сложность 0(1).
+ *
+ * -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+ *  Т.к. "под капотом" стоит один массив, то пространственная сложность составляет O(n).
+ *
+ **/
+
 public class A {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int lines = readInt(reader);
             int size = readInt(reader);
             List<String> commands = readCommands(reader, lines);
-
             MyDeque myDeque = new MyDeque(size);
+            StringBuilder sb = new StringBuilder();
 
             for (String command : commands) {
                 if (command.contains("push_front")) {
                     String[] commandArr = command.split(" ");
                     Integer x = Integer.parseInt(commandArr[1]);
                     if (!myDeque.pushFront(x)) {
-                        System.out.println("error");
+                        sb.append("error\n");
                     }
                 } else if (command.contains("push_back")) {
                     String[] commandArr = command.split(" ");
                     Integer x = Integer.parseInt(commandArr[1]);
                     if (!myDeque.pushBack(x)) {
-                        System.out.println("error");
+                        sb.append("error\n");
                     }
-                } else if (command.contains("pop_front")) {
+                } else if (command.equals("pop_front")) {
                     Integer x = myDeque.popFront();
                     if (x != null) {
-                        System.out.println(x);
-                    } else System.out.println("error");
-                } else if (command.contains("pop_back")) {
+                        sb.append(x).append("\n");
+                    } else {
+                        sb.append("error\n");
+                    }
+                } else if (command.equals("pop_back")) {
                     Integer x = myDeque.popBack();
                     if (x != null) {
-                        System.out.println(x);
-                    } else System.out.println("error");
+                        sb.append(x).append("\n");
+                    } else {
+                        sb.append("error\n");
+                    }
                 }
             }
+            System.out.println(sb);
         }
     }
 
