@@ -6,12 +6,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-// id посылки: 91027582
+// id посылки: 91105304
 
 /**
  * -- ПРИНЦИП РАБОТЫ--
  * По условию задачи, дек основан на кольцевом буфере. В своей реализации я использовал массив с фиксированной длиной.
- * Инвариантом является то, что голова (head) и хвост (tail) всегда указывают на крайние элементы (не обрамляют их).
+ * Инвариантом является то, что голова (head) всегда указывает на пустую ячейку рядом с первой, а хвост (tail) всегда
+ * указывают на крайний элемент.
  * При добавлении элемента:
  * - в голову дека значение головы уменьшается;
  * - в хвост дека значение хвоста увеличивается.
@@ -35,10 +36,10 @@ import java.util.List;
  * и наоборот обеспечивает закольцованность.
  * <p>
  * -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
- * Т.к. "под капотом" стоит массив, а операции извлечения и добавления выполняются по индексу, то сложность 0(1).
+ * Общая сложность алгоритма O(n), т.е. зависит от общего количества команд.
  * <p>
  * -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
- * Т.к. "под капотом" стоит один массив, то пространственная сложность составляет O(n).
+ * Пространственная сложность O(m), т.е. зависит от количества элементов, которые мы планируем добавить.
  **/
 
 public class A {
@@ -115,11 +116,6 @@ class MyDeque {
 
     public boolean pushBack(Integer x) {
         if (size == max) return false;
-        if (head == tail && size == 0) {
-            deque[tail] = x;
-            size++;
-            return true;
-        }
         tail = (tail + 1) % max;
         deque[tail] = x;
         size++;
@@ -127,18 +123,13 @@ class MyDeque {
     }
 
     public boolean pushFront(Integer x) {
-        if (size == max) {
-            return false;
-        } else if (head == tail && size == 0) {
-            deque[head] = x;
-            size++;
-            return true;
-        } else if (head != 0) {
+        if (size == max) return false;
+        deque[head] = x;
+        if (head != 0) {
             head--;
         } else {
             head = max - 1;
         }
-        deque[head] = x;
         size++;
         return true;
     }
@@ -148,9 +139,7 @@ class MyDeque {
         Integer pop = deque[tail];
         deque[tail] = null;
         size--;
-        if (tail == 0 && size == 0) {
-            return pop;
-        } else if (tail == 0) {
+        if (tail == 0) {
             tail = max - 1;
         } else {
             tail--;
@@ -160,13 +149,9 @@ class MyDeque {
 
     public Integer popFront() {
         if (size == 0) return null;
+        head = (head + 1) % max;
         Integer pop = deque[head];
         deque[head] = null;
-        if (head == tail) {
-            size--;
-            return pop;
-        }
-        head = (head + 1) % max;
         size--;
         return pop;
     }
