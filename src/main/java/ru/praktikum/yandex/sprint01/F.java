@@ -6,13 +6,24 @@ import java.io.InputStreamReader;
 
 public class F {
 
-    private static boolean isPalindrome(String text) {
-        String toCompare = text.replaceAll("[\\p{Punct}]|[\\s]", "");
-
-        StringBuilder sb = new StringBuilder(toCompare);
-        String reverse = sb.reverse().toString();
-
-        return toCompare.equalsIgnoreCase(reverse);
+    private static boolean isPalindrome(String s) {
+        String lower = s.toLowerCase();
+        int leftIndex = 0;
+        int rightIndex = s.length() - 1;
+        while (leftIndex < rightIndex) {
+            while (!Character.isLetterOrDigit(lower.charAt(leftIndex))) {
+                leftIndex++;
+            }
+            while (!Character.isLetterOrDigit(lower.charAt(rightIndex))) {
+                rightIndex--;
+            }
+            if (lower.charAt(leftIndex) != lower.charAt(rightIndex)) {
+                return false;
+            }
+            leftIndex++;
+            rightIndex--;
+        }
+        return true;
     }
 
     public static void main(String[] args) throws IOException {

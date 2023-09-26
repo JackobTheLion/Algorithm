@@ -36,9 +36,11 @@ public class C {
             int rowId = readInt(reader);
             int colId = readInt(reader);
             List<Integer> neighbours = getNeighbours(matrix, rowId, colId);
+            StringBuilder sb = new StringBuilder();
             for (int element : neighbours) {
-                System.out.print(element + " ");
+                sb.append(element).append(" ");
             }
+            System.out.println(sb);
         }
     }
 

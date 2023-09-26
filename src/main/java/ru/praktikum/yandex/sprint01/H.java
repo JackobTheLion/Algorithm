@@ -11,28 +11,28 @@ public class H {
         int bRight = b.length() - 1;
         StringBuilder sb = new StringBuilder();
         int minLength = Math.min(aRight, bRight);
-        int decade = 0;
+        int carry = 0;
 
 
         for (int i = minLength; i >= 0; i--) {
             if (a.charAt(aRight) == '1' && b.charAt(bRight) == '1') {
-                if (decade > 0) {
+                if (carry > 0) {
                     sb.append("1");
                 } else {
                     sb.append("0");
-                    decade = 1;
+                    carry = 1;
                 }
             } else if ((a.charAt(aRight) == '0' && b.charAt(bRight) == '1')
                     || (a.charAt(aRight) == '1' && b.charAt(bRight) == '0')) {
-                if (decade > 0) {
+                if (carry > 0) {
                     sb.append("0");
                 } else {
                     sb.append("1");
                 }
             } else if (a.charAt(aRight) == '0' && b.charAt(bRight) == '0') {
-                if (decade > 0) {
+                if (carry > 0) {
                     sb.append("1");
-                    decade = 0;
+                    carry = 0;
                 } else {
                     sb.append("0");
                 }
@@ -44,15 +44,15 @@ public class H {
         if (aRight < 0) {
             for (int i = bRight; i >= 0; i--) {
                 if (b.charAt(i) == '1') {
-                    if (decade > 0) {
+                    if (carry > 0) {
                         sb.append("0");
                     } else {
                         sb.append("1");
                     }
                 } else if (b.charAt(i) == '0') {
-                    if (decade > 0) {
+                    if (carry > 0) {
                         sb.append("1");
-                        decade = 0;
+                        carry = 0;
                     } else {
                         sb.append("0");
                     }
@@ -63,15 +63,15 @@ public class H {
         if (bRight < 0) {
             for (int i = aRight; i >= 0; i--) {
                 if (a.charAt(i) == '1') {
-                    if (decade > 0) {
+                    if (carry > 0) {
                         sb.append("0");
                     } else {
                         sb.append("1");
                     }
                 } else if (a.charAt(i) == '0') {
-                    if (decade > 0) {
+                    if (carry > 0) {
                         sb.append("1");
-                        decade = 0;
+                        carry = 0;
                     } else {
                         sb.append("0");
                     }
@@ -79,7 +79,7 @@ public class H {
             }
         }
 
-        if (decade > 0) {
+        if (carry > 0) {
             sb.append("1");
         }
 

@@ -8,16 +8,12 @@ import java.io.InputStreamReader;
 public class I {
 
     private static boolean isPowerOfFour(int n) {
-/*        if (n == 1) return true;
-
         while (n % 4 == 0) {
             n /= 4;
-            if ((n / 4 == 1 && n % 4 == 1) || n == 1) {
-                return true;
-            }
-        }*/
+        }
+        return n == 1;
 
-        return ((n & (n - 1)) == 0) && (n % 3 == 1);
+        //return ((n & (n - 1)) == 0) && (n % 3 == 1);
     }
 
     public static void main(String[] args) throws IOException {
@@ -32,9 +28,7 @@ public class I {
         }
     }
 
-
     private static int readInt(BufferedReader reader) throws IOException {
         return Integer.parseInt(reader.readLine());
     }
-
 }

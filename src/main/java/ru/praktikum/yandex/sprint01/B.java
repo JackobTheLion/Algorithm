@@ -2,11 +2,13 @@ package ru.praktikum.yandex.sprint01;
 
 import java.util.Scanner;
 
+import static java.lang.Math.abs;
+
 public class B {
 
     private static boolean checkParity(int a, int b, int c) {
-        return (a % 2 == 0 && b % 2 == 0 && c % 2 == 0) ||
-                (a % 2 != 0 && b % 2 != 0 && c % 2 != 0);
+        int y = abs(a % 2) + abs(b % 2) + abs(c % 2);
+        return y == 0 || y == 3;
     }
 
     public static void main(String[] args) {

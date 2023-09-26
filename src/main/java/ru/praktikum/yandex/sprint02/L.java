@@ -6,9 +6,10 @@ import java.io.InputStreamReader;
 
 public class L {
 
-    public static Integer getLastNumbers(long n, int k) {
-
+    public static long getLastNumbers(long n, int k) {
+        return 0;
     }
+
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             String line = reader.readLine();
