@@ -50,7 +50,7 @@ public class G {
 }
 
 class StackMax {
-    private List<Pair> stack = new ArrayList<>();
+    private final List<Pair> stack = new ArrayList<>();
 
     public void push(int x) {
         Integer max;

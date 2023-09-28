@@ -50,7 +50,7 @@ public class F {
 }
 
 class StackMax {
-    private List<Integer> stack = new ArrayList<>();
+    private final List<Integer> stack = new ArrayList<>();
 
     public void push(int x) {
         stack.add(x);

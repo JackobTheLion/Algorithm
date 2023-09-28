@@ -26,9 +26,8 @@ public class K {
     }
 
     private static List<Integer> readList(BufferedReader reader) throws IOException {
-        return Arrays.asList(reader.readLine().split(" "))
-                .stream()
-                .map(elem -> Integer.parseInt(elem))
+        return Arrays.stream(reader.readLine().split(" "))
+                .map(Integer::parseInt)
                 .collect(Collectors.toList());
     }
 

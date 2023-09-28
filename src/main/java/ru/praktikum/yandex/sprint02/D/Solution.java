@@ -21,7 +21,7 @@ public class Solution {
         while (currentNode.next != null) {
             if (currentNode.next.value.equals(elem)) {
                 return index;
-            } else  {
+            } else {
                 currentNode = currentNode.next;
                 index++;
             }

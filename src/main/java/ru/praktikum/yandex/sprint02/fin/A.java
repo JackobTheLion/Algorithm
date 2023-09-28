@@ -100,8 +100,8 @@ public class A {
 
 class MyDeque {
 
-    private Integer[] deque;
-    private int max;
+    private final Integer[] deque;
+    private final int max;
     private int size;
     private int head;
     private int tail;

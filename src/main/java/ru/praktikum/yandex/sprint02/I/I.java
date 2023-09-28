@@ -55,8 +55,8 @@ public class I {
 }
 
 class MyQueueSized {
-    private Integer[] queue;
-    private int max_n;
+    private final Integer[] queue;
+    private final int max_n;
     private int head;
     private int tail;
     private int size;
