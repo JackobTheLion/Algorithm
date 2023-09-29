@@ -10,29 +10,23 @@ import java.util.List;
 public class N {
 
     public static List<int[]> formBeds(List<int[]> beds) {
-        beds.sort(Comparator.comparingInt(o -> o[1]));
+        beds.sort(Comparator.comparingInt(o -> o[0]));
 
-        for (int i = 0; i < beds.size() - 1; i++) {
-            if (isOverlap(beds.get(i), beds.get(i + 1))) {
-                int[] left = beds.get(i);
-                int[] right = beds.get(i + 1);
-                left[0] = Math.min(left[0], right[0]);
-                left[1] = Math.max(left[1], right[1]);
-                beds.set(i, null);
-                beds.set(i + 1, left);
-            }
-        }
         List<int[]> result = new ArrayList<>();
-        for (int[] bed : beds) {
-            if (bed != null) {
-                result.add(bed);
+
+        for (int i = 0; i < beds.size(); i++) {
+            int[] bed = beds.get(i);
+            for (int j = i + 1; j < beds.size(); j++) {
+                if (bed[1] >= beds.get(j)[0]) {
+                    if (bed[1] < beds.get(j)[1]) {
+                        bed[1] = beds.get(j)[1];
+                    }
+                    i++;
+                } else break;
             }
+            result.add(bed);
         }
         return result;
-    }
-
-    private static boolean isOverlap(int[] a, int[] b) {
-        return !(a[0] > b[1] || b[0] > a[1]);
     }
 
     public static void main(String[] args) throws IOException {
@@ -63,5 +57,4 @@ public class N {
         }
         return beds;
     }
-
 }
