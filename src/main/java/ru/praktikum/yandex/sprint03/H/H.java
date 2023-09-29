@@ -32,10 +32,10 @@ public class H {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int n = readInt(reader);
             List<Integer> integers = readArr(reader);
-            System.out.println(getMaxNumber(integers, (Comparator<Integer>) (a, b) -> {
+            System.out.println(getMaxNumber(integers, (a, b) -> {
                 if (a.equals(b)) return 0;
-                String ab = a.toString() + b.toString();
-                String ba = b.toString() + a.toString();
+                String ab = a.toString() + b;
+                String ba = b.toString() + a;
                 return Integer.parseInt(ab) - Integer.parseInt(ba);
             }));
         }
