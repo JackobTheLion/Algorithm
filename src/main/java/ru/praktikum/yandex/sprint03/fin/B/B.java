@@ -5,40 +5,85 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+/*
+ * --ПРИНЦИП РАБОТЫ--
+ * Алгоритм работает по принципу быстрой сортировки.
+ * 1. Если разница правого и левого указателя меньше 1, остался один элемент, сортировать не нужно
+ * 2. Запоминаем изначальное положение левого и правого указателя.
+ * 3. Ищем опорный элемент - будем считать, что он находится в центре.
+ * 4. Заходим в цикл и проверяем, является ли элемент, на который указывает левый указатель больше опорного. Если
+ * меньше - двигаем указатель вперед, иак до тех пор, пока не найдем элемент, который больше.
+ * 5. Проверяем, указывает ли правый указатель на элемент, который строго меньше опорного. Если больше - двигаем
+ * указатель влево.
+ * 6. Если Указатели не встретились, то меняем элементы местами и двигаем указатели.
+ * 7. Проверяем встретились ли указатели теперь. Если нет, то повторяем цикл с п.4.,
+ * 8. Когда указатели встретились, то прерываем цикл и рекурсивно запускаем сортировку для левой и правой части. Важно,
+ * что указатели на последнем круге цикла "поменялись местами", т.е. левый указатель стал больше правого.
+ *
+ * --ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ--
+ * Рассмотрим пример: дан массив {35, 17, 13, 23}
+ * Выберем опорный элемент, например число 20. Расположим в исходном массиве слева все числа меньше опорного, а справа
+ * больше опорного. Получаем {13, 17 < 20 > 35, 23}.
+ * Теперь аналогично поступим с каждой половинкой рекурсивно.
+ * Дойдя до этапа, когда в рассматриваемом участке массива останется:
+ * - 0 и 1 элемент - уже отсортированы
+ * - 2 элемента - можем без проблем отсортировать.
+ *
+ * Таким образом мы получаем набор из отсортированных частей массива, расположенных друг за другом последовательно.
+ *
+ * --ВРЕМЕННАЯ СЛОЖНОСТЬ--
+ * Временная сложность в худшем случае (при неудачном выборе опорного элемента) составит O(n^2), например при выборе
+ * первого элемента в отсортированном массиве. В этом случае оставшаяся часть будет уменьшаться всего на 1 элемент.
+ * В среднем (при удачном выборе опорного элемента, который разделит массив на 2 приблизительно равные части)
+ * сложность алгоритма составит O(n log n)
+ *
+ * --ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ--
+ * Алгоритм внутри себя имеет три дополнительные переменные: изначальное положение левого и правого указателя и
+ * опорный элемент. Это О(1).
+ * Далее требуемая память зависит от глубины рекурсии, которая, как было рассмотрено выше, зависит от опорного элемента.
+ * Т.о. в худшем случае потребуется O(n^2), а в среднем O(n log n).
+ * */
+
+// Ссылка на посылку https://contest.yandex.ru/contest/23815/run-report/92369901/
 
 public class B {
 
-    public static List<Participant> sortParticipants(List<Participant> participants) {
+    public static void sortParticipants(List<Participant> participants) {
+        if (participants.isEmpty()) return;
         sortReq(participants, 0, participants.size() - 1);
-        return participants;
     }
 
     private static void sortReq(List<Participant> participants, int left, int right) {
-        if (right - left <= 1) return;
+        if (right - left < 1) return;
 
         int initialLeft = left;
         int initialRight = right;
 
         Participant pivot = participants.get((left + right) / 2);
 
-        while (left < right) {
-            while (compare(pivot, participants.get(left)) >= 0) {
+        while (true) {
+            while (compare(pivot, participants.get(left)) < 0) {
                 left++;
             }
-            while (compare(pivot, participants.get(right)) < 0) {
-                right--;
-            }
-            swap(participants, left, right);
 
-            if (left - right > 1) {
+            while (compare(pivot, participants.get(right)) > 0) {
+                right--;
+            }
+
+            if (left <= right) {
+                swap(participants, left, right);
                 left++;
                 right--;
-            } else break;
+            }
+
+            if (left > right) {
+                break;
+            }
         }
 
-        sortReq(participants, initialLeft, left);
-        sortReq(participants, right, initialRight);
+        sortReq(participants, initialLeft, right);
+        sortReq(participants, left, initialRight);
     }
 
     private static void swap(List<Participant> participants, int left, int right) {
@@ -51,9 +96,9 @@ public class B {
         if (p1.getSolved() != p2.getSolved()) {
             return p1.getSolved() - p2.getSolved();
         } else if (p1.getFine() != p2.getFine()) {
-            return p1.getFine() - p2.getFine();
+            return p2.getFine() - p1.getFine();
         } else {
-            return p1.getName().compareTo(p2.getName());
+            return p2.getName().compareTo(p1.getName());
         }
     }
 
@@ -62,10 +107,10 @@ public class B {
             int number = readInt(reader);
             List<Participant> participants = readParticipants(reader, number);
 
-            List<Participant> sortedParticipants = sortParticipants(participants);
+            sortParticipants(participants);
 
             StringBuilder sb = new StringBuilder();
-            for (Participant participant : sortedParticipants) {
+            for (Participant participant : participants) {
                 sb.append(participant.getName()).append("\n");
             }
             System.out.println(sb);
@@ -111,25 +156,5 @@ class Participant {
 
     public int getFine() {
         return fine;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Participant that = (Participant) o;
-
-        if (solved != that.solved) return false;
-        if (fine != that.fine) return false;
-        return Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + solved;
-        result = 31 * result + fine;
-        return result;
     }
 }
