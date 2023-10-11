@@ -62,7 +62,7 @@ public class B {
 
         Participant pivot = participants.get((left + right) / 2);
 
-        while (true) {
+        while (left <= right) {
             while (compare(pivot, participants.get(left)) < 0) {
                 left++;
             }
@@ -71,19 +71,16 @@ public class B {
                 right--;
             }
 
-            if (left <= right) {
-                swap(participants, left, right);
-                left++;
-                right--;
-            }
-
-            if (left > right) {
+            if (left >= right) {
                 break;
             }
+            swap(participants, left, right);
+            left++;
+            right--;
         }
 
-        sortReq(participants, initialLeft, right);
-        sortReq(participants, left, initialRight);
+        sortReq(participants, initialLeft, left - 1);
+        sortReq(participants, right + 1, initialRight);
     }
 
     private static void swap(List<Participant> participants, int left, int right) {

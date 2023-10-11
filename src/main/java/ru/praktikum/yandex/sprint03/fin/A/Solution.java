@@ -53,7 +53,19 @@ package ru.praktikum.yandex.sprint03.fin.A;
 
 public class Solution {
     public static int brokenSearch(int[] arr, int k) {
-        return brokenBinarySearch(arr, 0, arr.length, k);
+        int left = 0;
+        int right = arr.length - 1;
+
+        int mid = (left + right) / 2;
+
+        if (arr[mid] == k) return mid;
+
+        while (left > right) {
+
+        }
+
+
+        //return brokenBinarySearch(arr, 0, arr.length, k);
     }
 
     private static int brokenBinarySearch(int[] arr, int left, int right, int k) {
