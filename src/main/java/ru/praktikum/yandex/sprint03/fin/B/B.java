@@ -92,8 +92,9 @@ public class B {
     private static int compare(Participant p1, Participant p2) {
         if (p1.getSolved() != p2.getSolved()) {
             return p1.getSolved() - p2.getSolved();
-        } else if (p1.getFine() != p2.getFine()) {
-            return p2.getFine() - p1.getFine();
+        }
+        if (p1.getPenalty() != p2.getPenalty()) {
+            return p2.getPenalty() - p1.getPenalty();
         } else {
             return p2.getName().compareTo(p1.getName());
         }
@@ -129,18 +130,17 @@ public class B {
 
         return participants;
     }
-
 }
 
 class Participant {
     private final String name;
     private final int solved;
-    private final int fine;
+    private final int penalty;
 
-    public Participant(String name, int solved, int fine) {
+    public Participant(String name, int solved, int penalty) {
         this.name = name;
         this.solved = solved;
-        this.fine = fine;
+        this.penalty = penalty;
     }
 
     public String getName() {
@@ -151,7 +151,7 @@ class Participant {
         return solved;
     }
 
-    public int getFine() {
-        return fine;
+    public int getPenalty() {
+        return penalty;
     }
 }

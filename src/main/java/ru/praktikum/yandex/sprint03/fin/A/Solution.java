@@ -56,19 +56,28 @@ public class Solution {
         int left = 0;
         int right = arr.length - 1;
 
-        int mid = (left + right) / 2;
+        while (left <= right) {
+            if (arr[left] == k) return left;
+            if (arr[right] == k) return right;
 
-        if (arr[mid] == k) return mid;
+            int mid = (left + right) / 2;
+            if (arr[mid] == k) return mid;
 
-        while (left > right) {
-
+            if (arr[left] < arr[mid]) {
+                if (arr[left] < k && k < arr[mid]) {
+                    right = mid - 1;
+                } else left = mid + 1;
+            } else {
+                if (arr[mid] < k && k < arr[right]) {
+                    left = mid + 1;
+                } else right = mid - 1;
+            }
         }
-
-
+        return -1;
         //return brokenBinarySearch(arr, 0, arr.length, k);
     }
 
-    private static int brokenBinarySearch(int[] arr, int left, int right, int k) {
+   /* private static int brokenBinarySearch(int[] arr, int left, int right, int k) {
         if (right <= left) return -1;
 
         int mid = (left + right) / 2;
@@ -122,7 +131,7 @@ public class Solution {
         } else {
             return binarySearch(arr, mid + 1, right, k);
         }
-    }
+    }*/
 
     private static void test() {
         int[] arr = {19, 21, 100, 101, 1, 4, 5, 7, 12};
