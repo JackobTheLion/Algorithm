@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -74,19 +75,13 @@ public class B {
             if (left >= right) {
                 break;
             }
-            swap(participants, left, right);
+            Collections.swap(participants, left, right);
             left++;
             right--;
         }
 
-        sortReq(participants, initialLeft, left - 1);
+        sortReq(participants, initialLeft, left);
         sortReq(participants, right + 1, initialRight);
-    }
-
-    private static void swap(List<Participant> participants, int left, int right) {
-        Participant temp = participants.get(left);
-        participants.set(left, participants.get(right));
-        participants.set(right, temp);
     }
 
     private static int compare(Participant p1, Participant p2) {
@@ -95,9 +90,8 @@ public class B {
         }
         if (p1.getPenalty() != p2.getPenalty()) {
             return p2.getPenalty() - p1.getPenalty();
-        } else {
-            return p2.getName().compareTo(p1.getName());
         }
+        return p2.getName().compareTo(p1.getName());
     }
 
     public static void main(String[] args) throws IOException {
