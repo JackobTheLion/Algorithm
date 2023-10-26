@@ -3,31 +3,32 @@ package ru.praktikum.yandex.sprint04.J;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.security.KeyStore;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class J {
 
     public static Set<Four> findFours(List<Integer> array, Integer s) {
-        int length = array.size();
         array.sort(Integer::compare);
-
-        System.out.println(array);
 
         Map<Integer, Set<Pair>> history = new HashMap<>();
         Set<Four> fours = new HashSet<>();
 
-        for (int i = 0; i < length; i++) {
-            for (int j = i + 1; j < length; j++) {
+        for (int i = 0; i < array.size(); i++) {
+            for (int j = i + 1; j < array.size(); j++) {
 
                 int target = s - array.get(i) - array.get(j);
 
                 if (history.containsKey(target)) {
                     Set<Pair> saved = history.get(target);
                     for (Pair pair : saved) {
-                        Four four = new Four(array.get(pair.getFirst()), array.get(pair.getSecond()), array.get(i), array.get(j));
-
+                        if (pair.getFirst().equals(i) || pair.getSecond().equals(i)
+                                || pair.getFirst().equals(j) || pair.getSecond().equals(j)) {
+                            continue;
+                        }
+                        int[] arr = {array.get(pair.getFirst()), array.get(pair.getSecond()), array.get(i), array.get(j)};
+                        Arrays.sort(arr);
+                        Four four = new Four(arr);
                         fours.add(four);
                     }
                 }
@@ -38,29 +39,26 @@ public class J {
                 history.put(sum, pairs);
             }
         }
-        System.out.println("__________________________________________________________");
-        for(Map.Entry<Integer, Set<Pair>> entry : history.entrySet()){
-            System.out.println(entry.getKey());
-            for (Pair pair : entry.getValue()) {
-                System.out.println(pair);
-            }
-            System.out.println("---------------------------");
-
-        }
-        System.out.println("__________________________________________________________");
         return fours;
     }
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int n = readInt(reader);
+
+            if (n == 0) {
+                System.out.println(0);
+                return;
+            }
+
             int s = readInt(reader);
             List<Integer> arr = readArr(reader);
 
             Set<Four> fours = findFours(arr, s);
+            System.out.println(fours.size());
 
             for (Four four : fours) {
-                System.out.println(four.toString());
+                System.out.println(four);
             }
         }
     }
@@ -75,14 +73,10 @@ public class J {
 }
 
 class Four {
-    private final int[] arr = new int[4];
+    private final int[] arr;
 
-    public Four(Integer first, Integer second, Integer third, Integer fourth) {
-        arr[0] = first;
-        arr[1] = second;
-        arr[2] = third;
-        arr[3] = fourth;
-        Arrays.sort(arr);
+    public Four(int[] arr) {
+        this.arr = arr;
     }
 
     @Override
@@ -139,13 +133,5 @@ class Pair {
         int result = first != null ? first.hashCode() : 0;
         result = 31 * result + (second != null ? second.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Pair{" +
-                "first=" + first +
-                ", second=" + second +
-                '}';
     }
 }
