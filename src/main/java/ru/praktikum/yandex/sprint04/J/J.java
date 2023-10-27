@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class J {
 
@@ -68,7 +67,13 @@ public class J {
     }
 
     private static List<Integer> readArr(BufferedReader reader) throws IOException {
-        return Arrays.stream(reader.readLine().split(" ")).map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> result = new ArrayList<>();
+        StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+        while (tokenizer.hasMoreTokens()) {
+            Integer integer = Integer.parseInt(tokenizer.nextToken());
+            result.add(integer);
+        }
+        return result;
     }
 }
 
