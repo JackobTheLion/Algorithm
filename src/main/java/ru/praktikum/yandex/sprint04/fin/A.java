@@ -4,6 +4,42 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
+
+/* --ПРИНЦИП РАБОТЫ--
+ * Т.к. релевантность документа определяется количеством уникальных слов из запроса, содержащихся в документе, то удобно
+ * построить словарь, в котором за O(1) мы сможем по слову из запроса найти id всех документов и количество вхождений
+ * в документе, просуммировать их и выбрать 5 наиболее подходящих.
+ * Для этого построим словарь вида Map<Слова из документов, Map <Id документа, Количество вхождений в этом документе>>
+ *
+ * После построения словаря поиск сводится к перебору всех слов из запроса и составления списка ID документов для
+ * каждого отдельного запроса.
+ *
+ * --ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ--
+ *
+ * --ВРЕМЕННАЯ СЛОЖНОСТЬ--
+ * Временная сложность составляет O(n * k * m * t), где:
+ * n - количество документов
+ * k - количество слов в документе
+ * m - количество поисковых запросов
+ * t - количество слов в запросе
+ *
+ * Однако стоит отметить, что словарь составляется лишь один раз, а количество поисковых запросов может значительно
+ * превосходить количество документов, т.о. сложность можно принять за O(m*t) исключив время на создание словаря.
+ *
+ * --ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ--
+ * В алгоритме используется дополнительная память на создание словаря, что в худшем случае (когда в документах все слова
+ * уникальны) потребует O(n*k) памяти.
+ * В процессе поиска для каждого запроса создается промежуточная таблица, которая хранит id документ и его
+ * релевантность. Т.о. если каждый из документов содержит хотя бы одно слово из запроса, то это потребует O(n)
+ * дополнительной памяти.
+ * Результат программы хранится в списке вида List<List<ID документа, но не более 5 значений>>, что потребует O(m*5).
+ * Отбросив константы получим O(m).
+ * Таким образом сложность алгоритма составит O(n*k + n + m) -> O(n*(k+1) + m) -> O(n*k + m) памяти.
+ *
+ */
+
+//Ссылка на посылку: https://contest.yandex.ru/contest/24414/run-report/95378884/
 
 public class A {
     public static void main(String[] args) throws IOException {
@@ -11,12 +47,12 @@ public class A {
             int n = readInt(reader);
             List<String> docs = readDocs(reader, n);
             int m = readInt(reader);
-            List<String> requests = readDocs(reader, m);
+            List<Set<String>> requests = readRequests(reader, m);
 
-            List<List<Integer>> relevances = getRelevance(docs, requests);
+            List<List<Integer>> searchResult = search(docs, requests);
 
             StringBuilder sb = new StringBuilder();
-            for (List<Integer> list : relevances) {
+            for (List<Integer> list : searchResult) {
                 for (Integer integer : list) {
                     sb.append(integer).append(" ");
                 }
@@ -27,121 +63,54 @@ public class A {
         }
     }
 
-    private static List<List<Integer>> getRelevance(List<String> docs, List<String> requests) {
+    private static List<List<Integer>> search(List<String> docs, List<Set<String>> requests) {
         List<List<Integer>> result = new ArrayList<>();
-
-
-        List<Map<String, Integer>> appearances = mapDocs(docs);
-        List<Set<String>> requestsSet = new ArrayList<>();
-
-        for (String s : requests) {
-            requestsSet.add(getUniqKeyWords(s));
-        }
-
-        for (int i = 0; i < requests.size(); i++) {
-            Set<String> request = requestsSet.get(i);
-            Set<Relevance> relevances = new HashSet<>();
-
-            for (int j = 0; j < docs.size(); j++) {
-                Map<String, Integer> doc = appearances.get(j);
-
-                int relevance = 0;
-                for (String requestWord : request) {
-                    if (doc.containsKey(requestWord)) {
-                        relevance += doc.get(requestWord);
-                    }
-                }
-
-                if (relevance > 0) {
-                    relevances.add(new Relevance(j, relevance));
-                }
-            }
-
-            result.add(getTopRelevant(relevances));
-        }
-
-        return result;
-    }
-
-    private static List<List<Integer>> getRelevance2(List<String> docs, List<String> requests) {
-        List<List<Integer>> result = new ArrayList<>();
-
         Map<String, Map<Integer, Integer>> dictionary = makeDictionary(docs);
 
-        List<Set<String>> requestsSet = new ArrayList<>();
-        for (String s : requests) {
-            requestsSet.add(getUniqKeyWords(s));
-        }
-
-        for (int i = 0; i < requests.size(); i++) {
-            Set<String> request = requestsSet.get(i);
+        for (Set<String> request : requests) {
+            Map<Integer, Integer> relevances = new HashMap<>();
+            //id документа -> совпадение для запроса
 
             for (String searchWord : request) {
-                if (dictionary.containsKey(searchWord)) {
-                    Map<Integer, Integer> searchWordIndex = dictionary.get(searchWord);
-                    for (Map.Entry<Integer, Integer> index : searchWordIndex.entrySet()) {
+                Map<Integer, Integer> indexes = dictionary.getOrDefault(searchWord, new HashMap<>());
+                //id документа -> сколько раз встречается слово
 
-                    }
+                for (Map.Entry<Integer, Integer> index : indexes.entrySet()) {
+                    relevances.put(index.getKey(),
+                            relevances.getOrDefault(index.getKey(), 0) + index.getValue());
                 }
             }
+
+            result.add(relevances.entrySet().stream()
+                    .sorted((o1, o2) -> {
+                        if (o1.getValue() > o2.getValue()) {
+                            return -1;
+                        }
+                        if (o1.getValue() < o2.getValue()) {
+                            return 1;
+                        }
+                        return Integer.compare(o1.getKey(), o2.getKey());
+                    })
+                    .limit(5)
+                    .map(entry -> entry.getKey() + 1)
+                    .collect(Collectors.toList()));
         }
 
-        return result;
-    }
-
-
-    private static Set<String> getUniqKeyWords(String s) {
-        String[] array = s.split(" ");
-        return new HashSet<>(Arrays.asList(array));
-    }
-
-    private static List<Map<String, Integer>> mapDocs(List<String> docs) {
-        List<Map<String, Integer>> result = new ArrayList<>();
-        for (String doc : docs) {
-            Map<String, Integer> appearance = new HashMap<>();
-            String[] string = doc.split(" ");
-            for (String docWord : string) {
-                appearance.put(docWord, appearance.getOrDefault(docWord, 0) + 1);
-            }
-            result.add(appearance);
-        }
         return result;
     }
 
     private static Map<String, Map<Integer, Integer>> makeDictionary(List<String> docs) {
-        Map<String, Map<Integer, Integer>> result = new HashMap<>();
+        Map<String, Map<Integer, Integer>> dictionary = new HashMap<>();
 
         for (int i = 0; i < docs.size(); i++) {
             String[] words = docs.get(i).split(" ");
             for (String word : words) {
-                Map<Integer, Integer> map = result.getOrDefault(word, new HashMap<>());
-                map.put(i, map.getOrDefault(i, 0) + 1);
+                Map<Integer, Integer> index = dictionary.getOrDefault(word, new HashMap<>());
+                index.put(i, index.getOrDefault(i, 0) + 1);
+                dictionary.put(word, index);
             }
         }
-
-        return result;
-    }
-
-    private static List<Integer> getTopRelevant(Set<Relevance> relevance) {
-        List<Integer> result = new ArrayList<>();
-
-        List<Relevance> relevances = new ArrayList<>(relevance);
-        relevances.sort((o1, o2) -> {
-            if (o1.getCount() > o2.getCount()) {
-                return -1;
-            }
-            if (o1.getCount() < o2.getCount()) {
-                return 1;
-            } else {
-                return Integer.compare(o1.getId(), o2.getId());
-            }
-        });
-
-        for (int i = 0; i < 5 && i < relevances.size(); i++) {
-            result.add(relevances.get(i).getId() + 1);
-        }
-
-        return result;
+        return dictionary;
     }
 
     private static int readInt(BufferedReader reader) throws IOException {
@@ -155,44 +124,17 @@ public class A {
         }
         return result;
     }
-}
 
-class Relevance {
-    private final int id;
-    private int count;
-
-    public Relevance(int id, int count) {
-        this.id = id;
-        this.count = count;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void incrementCount() {
-        count++;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Relevance relevance1 = (Relevance) o;
-
-        if (id != relevance1.id) return false;
-        return count == relevance1.count;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + count;
-        return result;
+    private static List<Set<String>> readRequests(BufferedReader reader, int n) throws IOException {
+        List<Set<String>> requests = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            StringTokenizer stringTokenizer = new StringTokenizer(reader.readLine());
+            Set<String> request = new HashSet<>();
+            while (stringTokenizer.hasMoreTokens()) {
+                request.add(stringTokenizer.nextToken());
+            }
+            requests.add(request);
+        }
+        return requests;
     }
 }
