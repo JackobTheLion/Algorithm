@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /* --ПРИНЦИП РАБОТЫ--
  * Т.к. релевантность документа определяется количеством уникальных слов из запроса, содержащихся в документе, то удобно
@@ -24,14 +23,15 @@ import java.util.stream.Collectors;
  * каждого уникально слова из запроса в каждом документе.
  *
  * --ВРЕМЕННАЯ СЛОЖНОСТЬ--
- * Временная сложность составляет O(n * k * m * t), где:
+ * Временная сложность составляет O(n + m), где:
  * n - количество документов
- * k - количество слов в документе
  * m - количество поисковых запросов
- * t - количество слов в запросе
  *
- * Однако стоит отметить, что словарь составляется лишь один раз, а количество поисковых запросов может значительно
- * превосходить количество документов, т.о. сложность можно принять за O(m*t) исключив время на создание словаря.
+ * На асимптотику будет влиять количество слов в документе и запросе, однако в данной задаче этим можно пренебречь,
+ * т.к. их количество не велико.
+ *
+ * Стоит отметить, что словарь составляется лишь один раз, а количество поисковых запросов может значительно
+ * превосходить количество документов, т.о. сложность можно принять за O(m) исключив время на создание словаря.
  *
  * --ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ--
  * В алгоритме используется дополнительная память на создание словаря, что в худшем случае (когда в документах все слова
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * Таким образом сложность алгоритма составит O(n*k + n + m) -> O(n*(k+1) + m) -> O(n*k + m) памяти.
  */
 
-//Ссылка на посылку: https://contest.yandex.ru/contest/24414/run-report/95378884/
+//Ссылка на посылку: https://contest.yandex.ru/contest/24414/run-report/95685380/
 
 public class A {
     public static void main(String[] args) throws IOException {
@@ -86,22 +86,37 @@ public class A {
                 }
             }
 
-            result.add(relevances.entrySet().stream()
-                    .sorted((o1, o2) -> {
-                        if (o1.getValue() > o2.getValue()) {
-                            return -1;
-                        }
-                        if (o1.getValue() < o2.getValue()) {
-                            return 1;
-                        }
-                        return Integer.compare(o1.getKey(), o2.getKey());
-                    })
-                    .limit(5)
-                    .map(entry -> entry.getKey() + 1)
-                    .collect(Collectors.toList()));
+            List<Integer> subResult = new ArrayList<>();
+            int size = relevances.size();
+            for (int i = 0; i < 5 && i < size; i++) {
+                subResult.add(findMax(relevances) + 1);
+            }
+            result.add(subResult);
         }
 
         return result;
+    }
+
+    private static Integer findMax(Map<Integer, Integer> map) {
+        Map.Entry<Integer, Integer> max = null;
+
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if (max == null) {
+                max = entry;
+                continue;
+            }
+            if (max.getValue() < entry.getValue()) {
+                max = entry;
+            }
+            if (max.getValue().equals(entry.getValue())) {
+                if (max.getKey() > entry.getKey()) {
+                    max = entry;
+                }
+            }
+
+        }
+        map.remove(max.getKey());
+        return max.getKey();
     }
 
     private static Map<String, Map<Integer, Integer>> makeDictionary(List<String> docs) {
