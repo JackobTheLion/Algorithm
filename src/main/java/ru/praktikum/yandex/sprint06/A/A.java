@@ -13,33 +13,32 @@ public class A {
             List<Integer> ribsNumber = readNumberOfRibs(reader);
             List<Rib> ribs = readRibs(reader, ribsNumber.get(1));
 
-            makeAdjacencyList(ribs, ribsNumber.get(0));
+            List<Vertex> vertices = makeAdjacencyList(ribs, ribsNumber.get(0));
+
+            StringBuilder sb = new StringBuilder();
+            for (Vertex vertex : vertices) {
+                sb.append(vertex.adjacentVertex.size()).append(" ");
+                for (Integer integer : vertex.adjacentVertex) {
+                    sb.append(integer).append(" ");
+                }
+                sb.append("\n");
+            }
+            System.out.println(sb);
         }
     }
 
-    private static void makeAdjacencyList(List<Rib> ribs, int knotsNumber) {
-        List<List<Integer>> adjacencyList = new ArrayList<>(knotsNumber);
+    private static List<Vertex> makeAdjacencyList(List<Rib> ribs, int knotsNumber) {
+        List<Vertex> adjacencyList = new ArrayList<>(knotsNumber);
 
         for (int i = 0; i < knotsNumber; i++) {
-            adjacencyList.add(new ArrayList<>());
+            adjacencyList.add(new Vertex());
         }
 
         for (Rib rib : ribs) {
-            List<Integer> integers = adjacencyList.get(rib.start - 1);
+            List<Integer> integers = adjacencyList.get(rib.start - 1).adjacentVertex;
             integers.add(rib.end);
         }
-
-        StringBuilder sb = new StringBuilder();
-        for (List<Integer> integers : adjacencyList) {
-            integers.sort(Integer::compareTo);
-            sb.append(integers.size()).append(" ");
-            for (Integer integer : integers) {
-                sb.append(integer).append(" ");
-            }
-            sb.append("\n");
-        }
-
-        System.out.println(sb);
+        return adjacencyList;
     }
 
     private static List<Integer> readNumberOfRibs(BufferedReader reader) throws IOException {
@@ -59,6 +58,14 @@ public class A {
             ribs.add(new Rib(Integer.parseInt(s[0]), Integer.parseInt(s[1])));
         }
         return ribs;
+    }
+}
+
+class Vertex {
+    List<Integer> adjacentVertex;
+
+    public Vertex() {
+        adjacentVertex = new ArrayList<>();
     }
 }
 

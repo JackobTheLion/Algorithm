@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 
 public class B {
     public static void main(String[] args) throws IOException {
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             List<Integer> ribsNumber = readNumberOfRibs(reader);
             List<Rib> ribs = readRibs(reader, ribsNumber.get(1));
 
