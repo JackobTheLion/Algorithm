@@ -1,4 +1,4 @@
-package ru.praktikum.yandex.sprint06.H;
+package ru.praktikum.yandex.sprint06.J;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,55 +8,53 @@ import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-public class H {
+public class J {
 
-    private static int[] colors;
+    private static Stack<Integer> stack = new Stack<>();
+
+    private static int[] color;
+
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             List<Integer> numberOfVertexAndRibs = readNumberOfRibs(reader);
             List<List<Integer>> vertices = readVertices(reader, numberOfVertexAndRibs.get(1), numberOfVertexAndRibs.get(0));
-            colors = new int[vertices.size()];
 
-            System.out.println(DFS(vertices, 1));
+            color = new int[vertices.size()];
+
+            for (int i = vertices.size() - 1; i >= 1; i--) {
+                topologicalSort(vertices, i);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            while (!stack.isEmpty()) {
+                sb.append(stack.pop()).append(" ");
+            }
+            System.out.println(sb);
         }
     }
 
-    private static String DFS(List<List<Integer>> vertices, int startVertex) {
-        Stack<Integer> stack = new Stack<>();
-        int time = 0;
-        int[] entry = new int[vertices.size()];
-        int[] leave = new int[vertices.size()];
+    private static void topologicalSort(List<List<Integer>> vertices, int v) {
+        Stack<Integer> order = new Stack<>();
 
-        stack.push(startVertex);
-        while (!stack.isEmpty()) {
-            int v = stack.pop();
-            if (colors[v] == 0) {
-                entry[v] = time;
-                time += 1;
-                colors[v] = 1;
-                stack.push(v);
+        order.push(v);
+        while (!order.isEmpty()) {
+            v = order.pop();
+            if (color[v - 1] == 0) {
+                color[v - 1] = 1;
+                order.push(v);
                 List<Integer> adjacentVertices = vertices.get(v);
                 adjacentVertices.sort((o1, o2) -> Integer.compare(o2, o1));
                 for (Integer adjacentVertex : adjacentVertices) {
-                    if (colors[adjacentVertex] == 0) {
-                        stack.push(adjacentVertex);
+                    if (color[adjacentVertex - 1] == 0) {
+                        order.push(adjacentVertex);
                     }
                 }
-            } else if (colors[v] == 1) {
-                leave[v] = time;
-                time += 1;
-                colors[v] = 2;
+            } else if (color[v - 1] == 1) {
+                color[v - 1] = 2;
+                stack.push(v);
             }
         }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i < entry.length; i++) {
-            if (entry[i] == 0 && leave[i] == 0) continue;
-            sb.append(entry[i]).append(" ").append(leave[i]).append("\n");
-        }
-
-        return sb.toString();
     }
 
     private static List<Integer> readNumberOfRibs(BufferedReader reader) throws IOException {
