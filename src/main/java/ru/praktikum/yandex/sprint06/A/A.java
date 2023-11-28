@@ -10,10 +10,10 @@ import java.util.StringTokenizer;
 public class A {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            List<Integer> ribsNumber = readNumberOfRibs(reader);
-            List<Rib> ribs = readRibs(reader, ribsNumber.get(1));
+            List<Integer> vertexNumberAndRibsNumber = readNumberOfRibs(reader);
+            List<Rib> ribs = readRibs(reader, vertexNumberAndRibsNumber.get(1));
 
-            List<Vertex> vertices = makeAdjacencyList(ribs, ribsNumber.get(0));
+            List<Vertex> vertices = makeAdjacencyList(ribs, vertexNumberAndRibsNumber.get(0));
 
             StringBuilder sb = new StringBuilder();
             for (Vertex vertex : vertices) {
@@ -27,10 +27,10 @@ public class A {
         }
     }
 
-    private static List<Vertex> makeAdjacencyList(List<Rib> ribs, int knotsNumber) {
-        List<Vertex> adjacencyList = new ArrayList<>(knotsNumber);
+    private static List<Vertex> makeAdjacencyList(List<Rib> ribs, int vertexNumber) {
+        List<Vertex> adjacencyList = new ArrayList<>(vertexNumber);
 
-        for (int i = 0; i < knotsNumber; i++) {
+        for (int i = 0; i < vertexNumber; i++) {
             adjacencyList.add(new Vertex());
         }
 

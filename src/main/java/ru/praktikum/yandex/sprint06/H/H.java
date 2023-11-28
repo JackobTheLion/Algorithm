@@ -1,4 +1,4 @@
-package ru.praktikum.yandex.sprint06.C;
+package ru.praktikum.yandex.sprint06.H;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,46 +8,68 @@ import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
-public class C {
+public class H {
 
     private static List<String> colors;
-    private static Stack<Integer> stack = new Stack<>();
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            List<Integer> numberOfRibs = readNumberOfRibs(reader);
-            List<Rib> ribs = readRibs(reader, numberOfRibs.get(1));
-            int start = readInt(reader);
-            initializeColor(numberOfRibs.get(0));
-            List<Vertex> vertices = makeAdjacencyList(ribs, numberOfRibs.get(0));
-            System.out.println(DFS(vertices, start));
+            List<Integer> numberOfVertexAndRibs = readNumberOfRibs(reader);
+            initializeColor(numberOfVertexAndRibs.get(0));
+            List<List<Integer>> vertices = readVertices(reader, numberOfVertexAndRibs.get(1), numberOfVertexAndRibs.get(0));
+            StringBuilder sb = new StringBuilder();
+/*            for (int i = 1; i < vertices.size(); i++) {
+                sb.append(DFS(vertices, i));
+            }*/
+            sb.append(DFS(vertices, 1));
+            System.out.println(sb);
         }
     }
 
-    private static String DFS(List<Vertex> vertices, int startVertex) {
+    private static String DFS(List<List<Integer>> vertices, int startVertex) {
         Stack<Integer> stack = new Stack<>();
+        int time = 0;
+        List<Integer> entry = initTimer(vertices.size());
+        List<Integer> leave = initTimer(vertices.size());
+
         StringBuilder sb = new StringBuilder();
+
         stack.push(startVertex);
         while (!stack.isEmpty()) {
             int v = stack.pop();
             if (colors.get(v).equals("white")) {
-                sb.append(v).append(" ");
+                entry.set(v, time);
+                time += 1;
                 colors.set(v, "gray");
                 stack.push(v);
-                List<Integer> adjacentVertices = vertices.get(v).adjacentVertices;
+                List<Integer> adjacentVertices = vertices.get(v);
                 adjacentVertices.sort((o1, o2) -> Integer.compare(o2, o1));
-
                 for (Integer adjacentVertex : adjacentVertices) {
                     if (colors.get(adjacentVertex).equals("white")) {
                         stack.push(adjacentVertex);
                     }
                 }
             } else if (colors.get(v).equals("gray")) {
+                leave.set(v, time);
+                time += 1;
                 colors.set(v, "black");
             }
         }
 
+        for (int i = 1; i < entry.size(); i++) {
+            if (entry.get(i) == null) continue;
+            sb.append(entry.get(i)).append(" ").append(leave.get(i)).append("\n");
+        }
+
         return sb.toString();
+    }
+
+    private static List<Integer> initTimer(int size) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < size + 1; i++) {
+            result.add(null);
+        }
+        return result;
     }
 
     private static void initializeColor(int numVertices) {
@@ -55,26 +77,6 @@ public class C {
         for (int i = 0; i < numVertices + 1; i++) {
             colors.add("white");
         }
-    }
-
-    private static int readInt(BufferedReader reader) throws IOException {
-        return Integer.parseInt(reader.readLine());
-    }
-
-    private static List<Vertex> makeAdjacencyList(List<Rib> ribs, int knotsNumber) {
-        List<Vertex> vertices = new ArrayList<>(knotsNumber + 1);
-
-        for (int i = 0; i < knotsNumber + 1; i++) {
-            vertices.add(new Vertex());
-        }
-
-        for (Rib rib : ribs) {
-            List<Integer> integers = vertices.get(rib.start).adjacentVertices;
-            integers.add(rib.end);
-            integers = vertices.get(rib.end).adjacentVertices;
-            integers.add(rib.start);
-        }
-        return vertices;
     }
 
     private static List<Integer> readNumberOfRibs(BufferedReader reader) throws IOException {
@@ -87,30 +89,16 @@ public class C {
         return result;
     }
 
-    private static List<Rib> readRibs(BufferedReader reader, int numberOfRibs) throws IOException {
-        List<Rib> ribs = new ArrayList<>(numberOfRibs);
+    private static List<List<Integer>> readVertices(BufferedReader reader, int numberOfRibs, int numberOfVertices) throws IOException {
+        List<List<Integer>> vertices = new ArrayList(numberOfVertices);
+        for (int i = 0; i < numberOfVertices + 1; i++) {
+            vertices.add(new ArrayList());
+        }
+
         for (int i = 0; i < numberOfRibs; i++) {
             String[] s = reader.readLine().split(" ");
-            ribs.add(new Rib(Integer.parseInt(s[0]), Integer.parseInt(s[1])));
+            vertices.get(Integer.parseInt(s[0])).add(Integer.parseInt(s[1]));
         }
-        return ribs;
-    }
-}
-
-class Vertex {
-    List<Integer> adjacentVertices;
-
-    public Vertex() {
-        adjacentVertices = new ArrayList<>();
-    }
-}
-
-class Rib {
-    int start;
-    int end;
-
-    public Rib(int start, int end) {
-        this.start = start;
-        this.end = end;
+        return vertices;
     }
 }
