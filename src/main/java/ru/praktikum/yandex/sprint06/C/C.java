@@ -11,7 +11,6 @@ import java.util.StringTokenizer;
 public class C {
 
     private static List<String> colors;
-    private static Stack<Integer> stack = new Stack<>();
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {

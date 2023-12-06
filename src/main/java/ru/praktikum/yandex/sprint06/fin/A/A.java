@@ -1,4 +1,4 @@
-package ru.praktikum.yandex.sprint06.fin;
+package ru.praktikum.yandex.sprint06.fin.A;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class A {
     private static int getWeight(List<Vertex> vertices) {
         Set<Vertex> addedVertices = new HashSet<>();
         Set<Vertex> notAddedVertices = new HashSet<>(vertices);
-        PriorityQueue<Rib> edges = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.weight, o1.weight));
+        Queue<Rib> edges = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.weight, o1.weight));
 
         Vertex vertex = vertices.get(0);
 
@@ -49,7 +49,7 @@ public class A {
     }
 
     private static void addVertex(Vertex vertex, Set<Vertex> addedVertices, Set<Vertex> notAddedVertices,
-                                  List<Vertex> vertices, PriorityQueue<Rib> edges) {
+                                  List<Vertex> vertices, Queue<Rib> edges) {
         addedVertices.add(vertex);
         notAddedVertices.remove(vertex);
         for (Rib rib : vertex.ribs) {
@@ -76,10 +76,11 @@ public class A {
         }
 
         for (int i = 0; i < numberOfRibs; i++) {
-            String[] s = reader.readLine().split(" ");
-            int start = parseInt(s[0]) - 1;
-            int end = parseInt(s[1]) - 1;
-            int weight = parseInt(s[2]);
+            //String[] s = reader.readLine().split(" ");
+            StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
+            int start = parseInt(tokenizer.nextToken()) - 1;
+            int end = parseInt(tokenizer.nextToken()) - 1;
+            int weight = parseInt(tokenizer.nextToken());
 
             vertices.get(start).ribs.add(new Rib(start, end, weight));
             vertices.get(end).ribs.add(new Rib(end, start, weight));
