@@ -13,23 +13,24 @@ import static java.lang.Integer.parseInt;
  *
  * Для решения нам понадобятся вспомогательные классы вершин (Vertex) и ребер (Rib).
  *
- * 1. Создадим сет для поиска уже добавленных верши за О(1).
- * 2. Создадим сет для поиска еще не добавленных вершин за О(1) и сразу добавим в него все вершины
- * 3. Создадим приоритетную очередь для ребер, в вершине которой будет всегда находится ребро с самым большим весом
- * 4. Возьмем первую вершину из списка (с какой начинать неважно, т.к. в остовное дерево попадут все вершины)
- * 5. Далее воспользуемся методом добавления вершин который:
- * 5.1 добавит вершину в сет добавленных
- * 5.2 удалит из сета не добавленных
- * 5.3 добавит все исходящие ребра вершины в очередь
+ * 1. Создадим массив булевых значений, для определения, посещали ли мы вершину.
+ * 2. Создадим приоритетную очередь для ребер, в вершине которой будет всегда находится ребро с самым большим весом
+ * 3. Возьмем первую вершину из списка (с какой начинать неважно, т.к. в остовное дерево попадут все вершины)
+ * 4. Далее воспользуемся методом добавления вершин который:
+ * 4.1 Отметит в массиве, что вершина посещена
+ * 4.2 добавит все исходящие ребра вершины в очередь
+ * 5. Заведем счетчик количества посещенных вершин
  * 6. Заведем переменную веса графа
- * 7. Далее в цикле до тех пор, пока существуют недобавленные вершины и нерассмотренные ребра
+ * 7. Далее в цикле до тех пор, пока существуют недобавленные вершины (счетчик меньше их количества) и
+ * нерассмотренные ребра
  * 7.1 достаем самое "тяжелое" ребро из очереди
  * 7.2 если вершина на его конце еще не добавлена в сет добавленных то
  * 7.2.1 добавляем вершину в сет добавленных
- * 7.2.2 все ребра из этой вершины добавляем в очередь и переносим вершину в список добавленных (см. п.5)
- * 7.2.3 увеличиваем вес графа на вес ребра
+ * 7.2.2 все ребра из этой вершины добавляем в очередь и помечаем как посещенную (см. п.5)
+ * 7.2.3 увеличиваем вес графа на вес ребра и увеличиваем счетчик посещенных вершин
  * 8. После выхода из цикла проверяем, все ли вершины были добавлены
- * 8.1 если не все и в сете еще есть вершины, значит граф несвязный, остновное дерево построить нельзя, вернем -1
+ * 8.1 если не все (счетчик меньше общего количества вершин), значит граф несвязный, остновное дерево построить нельзя,
+ * вернем -1
  * 8.2 если все вершины добавлены, то возвращаем вес графа
  *
  * --ДОКОЗАТЕЛЬСТВО КОРРЕКТНОСТИ--
@@ -50,8 +51,7 @@ import static java.lang.Integer.parseInt;
  *
  * --ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ--
  * Пространственная сложность складывается из следующего:
- * - Сет добавленных и сет недобавленных вершин в сумме дают О(|V|), т.к. вершина одновременно может лежать только в
- * одном сете.
+ * - Массив булевых значений, размером О(|V|)
  * - Очередь в худшем случае О(|E|), если все ребра графа попадут в нее
  * - Текущая рассматриваемся вершина О(1)
  * - Общий вес графа О(1)
@@ -60,7 +60,7 @@ import static java.lang.Integer.parseInt;
  *
  */
 
-// Ссылка на посылку: https://contest.yandex.ru/contest/25070/run-report/102139266/
+// Ссылка на посылку: https://contest.yandex.ru/contest/25070/run-report/102326864/
 
 public class A {
 
@@ -80,35 +80,35 @@ public class A {
     }
 
     private static int getWeight(List<Vertex> vertices) {
-        Set<Vertex> addedVertices = new HashSet<>();
-        Set<Vertex> notAddedVertices = new HashSet<>(vertices);
-        Queue<Rib> edges = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.weight, o1.weight));
+        boolean[] visited = new boolean[vertices.size()];
+
+        Queue<Edge> edges = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.weight, o1.weight));
 
         Vertex vertex = vertices.get(0);
 
-        addVertex(vertex, addedVertices, notAddedVertices, vertices, edges);
+        addVertex(vertex, visited, edges);
+        int visitedNumber = 1;
 
         int weight = 0;
-        while (!notAddedVertices.isEmpty() && !edges.isEmpty()) {
-            Rib maximumRib = edges.poll();
-            if (!addedVertices.contains(vertices.get(maximumRib.end))) {
-                addVertex(vertices.get(maximumRib.end), addedVertices, notAddedVertices, vertices, edges);
-                weight += maximumRib.weight;
+        while (!edges.isEmpty() && visitedNumber < vertices.size()) {
+            Edge maximumEdge = edges.poll();
+            if (!visited[maximumEdge.end]) {
+                addVertex(vertices.get(maximumEdge.end), visited, edges);
+                visitedNumber++;
+                weight += maximumEdge.weight;
             }
         }
 
-        if (!notAddedVertices.isEmpty()) {
+        if (visitedNumber < vertices.size()) {
             return -1;
         } else return weight;
     }
 
-    private static void addVertex(Vertex vertex, Set<Vertex> addedVertices, Set<Vertex> notAddedVertices,
-                                  List<Vertex> vertices, Queue<Rib> edges) {
-        addedVertices.add(vertex);
-        notAddedVertices.remove(vertex);
-        for (Rib rib : vertex.ribs) {
-            if (notAddedVertices.contains(vertices.get(rib.end))) {
-                edges.add(rib);
+    private static void addVertex(Vertex vertex, boolean[] visited, Queue<Edge> edges) {
+        visited[vertex.value - 1] = true;
+        for (Edge edge : vertex.edges) {
+            if (!visited[edge.end]) {
+                edges.add(edge);
             }
         }
     }
@@ -135,8 +135,8 @@ public class A {
             int end = parseInt(tokenizer.nextToken()) - 1;
             int weight = parseInt(tokenizer.nextToken());
 
-            vertices.get(start).ribs.add(new Rib(start, end, weight));
-            vertices.get(end).ribs.add(new Rib(end, start, weight));
+            vertices.get(start).edges.add(new Edge(start, end, weight));
+            vertices.get(end).edges.add(new Edge(end, start, weight));
         }
         return vertices;
     }
@@ -144,11 +144,11 @@ public class A {
 
 class Vertex {
     final int value;
-    final List<Rib> ribs;
+    final List<Edge> edges;
 
     public Vertex(int value) {
         this.value = value;
-        this.ribs = new ArrayList<>();
+        this.edges = new ArrayList<>();
     }
 
     @Override
@@ -167,12 +167,12 @@ class Vertex {
     }
 }
 
-class Rib {
+class Edge {
     final int start;
     final int end;
     final int weight;
 
-    public Rib(int start, int end, int weight) {
+    public Edge(int start, int end, int weight) {
         this.start = start;
         this.end = end;
         this.weight = weight;
