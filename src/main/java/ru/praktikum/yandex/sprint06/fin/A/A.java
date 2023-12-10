@@ -11,7 +11,7 @@ import static java.lang.Integer.parseInt;
  * Задача сводится к поиску максимального остовного дерева, что в свою очередь достигается с помощью алгоритма Прима,
  * модифицированного таким образом, чтобы выбирать не минимальное, а максимальное ребро.
  *
- * Для решения нам понадобятся вспомогательные классы вершин (Vertex) и ребер (Rib).
+ * Для решения нам понадобятся вспомогательные классы вершин (Vertex) и ребер (Edge).
  *
  * 1. Создадим массив булевых значений, для определения, посещали ли мы вершину.
  * 2. Создадим приоритетную очередь для ребер, в вершине которой будет всегда находится ребро с самым большим весом
@@ -66,8 +66,8 @@ public class A {
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            List<Integer> numberOfVertexAndRibs = readNumberOfRibs(reader);
-            List<Vertex> vertices = readVertices(reader, numberOfVertexAndRibs.get(1), numberOfVertexAndRibs.get(0));
+            List<Integer> numberOfVertexAndEdges = readNumberOfEdges(reader);
+            List<Vertex> vertices = readVertices(reader, numberOfVertexAndEdges.get(1), numberOfVertexAndEdges.get(0));
 
             int weight = getWeight(vertices);
 
@@ -113,7 +113,7 @@ public class A {
         }
     }
 
-    private static List<Integer> readNumberOfRibs(BufferedReader reader) throws IOException {
+    private static List<Integer> readNumberOfEdges(BufferedReader reader) throws IOException {
         List<Integer> result = new ArrayList<>();
         StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
         while (tokenizer.hasMoreTokens()) {
@@ -123,13 +123,13 @@ public class A {
         return result;
     }
 
-    private static List<Vertex> readVertices(BufferedReader reader, int numberOfRibs, int numberOfVertices) throws IOException {
+    private static List<Vertex> readVertices(BufferedReader reader, int numberOfEdges, int numberOfVertices) throws IOException {
         List<Vertex> vertices = new ArrayList<>(numberOfVertices);
         for (int i = 0; i < numberOfVertices; i++) {
             vertices.add(new Vertex(i + 1));
         }
 
-        for (int i = 0; i < numberOfRibs; i++) {
+        for (int i = 0; i < numberOfEdges; i++) {
             StringTokenizer tokenizer = new StringTokenizer(reader.readLine());
             int start = parseInt(tokenizer.nextToken()) - 1;
             int end = parseInt(tokenizer.nextToken()) - 1;

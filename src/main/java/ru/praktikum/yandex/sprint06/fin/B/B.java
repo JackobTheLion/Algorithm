@@ -75,9 +75,9 @@ public class B {
                 if (pop.color == 0) {
                     pop.color = 1;
                     stack.push(pop);
-                    List<Integer> ribs = pop.ribs;
-                    for (Integer rib : ribs) {
-                        Vertex adjacentVertex = vertices.get(rib);
+                    List<Integer> edges = pop.edges;
+                    for (Integer edge : edges) {
+                        Vertex adjacentVertex = vertices.get(edge);
                         if (adjacentVertex.color == 0) {
                             stack.push(adjacentVertex);
                         } else if (adjacentVertex.color == 1) {
@@ -108,9 +108,9 @@ public class B {
             String line = tokenizer.nextToken();
             for (int j = 0; j < line.length(); j++) {
                 if (line.charAt(j) == 'R') {
-                    vertices.get(i).ribs.add(i + j + 1);
+                    vertices.get(i).edges.add(i + j + 1);
                 } else {
-                    vertices.get(i + j + 1).ribs.add(i);
+                    vertices.get(i + j + 1).edges.add(i);
                 }
             }
         }
@@ -120,13 +120,13 @@ public class B {
 
 class Vertex {
     final int value;
-    final List<Integer> ribs;
+    final List<Integer> edges;
 
     int color; // 0 - белый, 1 - серый, 2 - черный
 
     public Vertex(int value) {
         this.value = value;
-        this.ribs = new ArrayList<>();
+        this.edges = new ArrayList<>();
         this.color = 0;
     }
 }
