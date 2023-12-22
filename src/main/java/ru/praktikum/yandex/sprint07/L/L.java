@@ -14,16 +14,16 @@ public class L {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             List<Integer> numberOfBarsAndCapacity = readNumberOfBarsAndCapacity(reader);
-            List<Integer> weghts = readWeghts(reader);
+            List<Integer> weights = readWeights(reader, numberOfBarsAndCapacity.get(1));
 
-            System.out.println(calcMaxWeight(weghts, numberOfBarsAndCapacity.get(1)));
+            System.out.println(calcMaxWeight(weights, numberOfBarsAndCapacity.get(1)));
         }
     }
 
     private static int calcMaxWeight(List<Integer> weights, int capacity) {
         int[] dp = new int[capacity + 1];
 
-        for (int i = weights.get(0); i < capacity; i++) {
+        for (int i = weights.get(0); i <= capacity; i++) {
             dp[i] = weights.get(0);
         }
 
@@ -50,15 +50,15 @@ public class L {
         return numberOfBarsAndCapacity;
     }
 
-    private static List<Integer> readWeghts(BufferedReader reader) throws IOException {
-        List<Integer> weghts = new ArrayList<>();
+    private static List<Integer> readWeights(BufferedReader reader, int numberOfPiles) throws IOException {
+        List<Integer> weights = new ArrayList<>(numberOfPiles);
 
         StringTokenizer stringTokenizer = new StringTokenizer(reader.readLine());
         while (stringTokenizer.hasMoreTokens()) {
             int weight = parseInt(stringTokenizer.nextToken());
-            weghts.add(weight);
+            weights.add(weight);
         }
 
-        return weghts;
+        return weights;
     }
 }
