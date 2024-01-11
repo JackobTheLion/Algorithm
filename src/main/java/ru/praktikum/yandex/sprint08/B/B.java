@@ -19,6 +19,26 @@ public class B {
     }
 
     public static boolean compare(String a, String b) {
-        return false;
+        int aPointer = 0;
+        int bPointer = 0;
+        boolean hasMisMatch = true;
+
+        while (aPointer < a.length() && bPointer < b.length()) {
+            if (a.charAt(aPointer) != b.charAt(bPointer)) {
+                if (!hasMisMatch) {
+                    return false;
+                }
+                hasMisMatch = false;
+                if (a.length() < b.length()) {
+                    bPointer++;
+                } else if (a.length() > b.length()) {
+                    aPointer++;
+                }
+            }
+            aPointer++;
+            bPointer++;
+        }
+
+        return true;
     }
 }
