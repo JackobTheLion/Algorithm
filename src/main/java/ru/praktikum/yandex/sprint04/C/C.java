@@ -10,6 +10,17 @@ import java.util.stream.Collectors;
 
 public class C {
 
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            int a = readInt(reader);
+            int m = readInt(reader);
+            String s = reader.readLine();
+            int t = readInt(reader);
+            List<String> indexes = readIndexes(reader, t);
+            printSubHash(s, indexes, a, m, t);
+        }
+    }
+
     public static void printSubHash(String s, List<String> indexes, int a, int m, int t) {
         if (s.isEmpty()) {
             for (int i = 0; i < t; i++) {
@@ -48,17 +59,6 @@ public class C {
         }
 
         return hashes;
-    }
-
-    public static void main(String[] args) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            int a = readInt(reader);
-            int m = readInt(reader);
-            String s = reader.readLine();
-            int t = readInt(reader);
-            List<String> indexes = readIndexes(reader, t);
-            printSubHash(s, indexes, a, m, t);
-        }
     }
 
     private static int readInt(BufferedReader reader) throws IOException {
