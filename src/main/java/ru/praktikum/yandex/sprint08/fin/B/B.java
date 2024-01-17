@@ -47,7 +47,7 @@ import java.util.Map;
  *
  */
 
-//Ссылка на посылку: https://contest.yandex.ru/contest/26133/run-report/105045145/
+//Ссылка на посылку: https://contest.yandex.ru/contest/26133/run-report/105124953/
 
 public class B {
     public static void main(String[] args) throws IOException {
@@ -69,14 +69,14 @@ public class B {
         dp[0] = true;
 
         for (int i = 1; i <= text.length(); i++) {
-            if (root.vertex.containsKey(text.charAt(i - 1))) {
+            if (root.vertex.containsKey(text.charAt(i - 1)) && dp[i - 1]) {
                 Node currentNode = root;
                 for (int j = i; j <= text.length(); j++) {
                     currentNode = currentNode.vertex.get(text.charAt(j - 1));
                     if (currentNode == null) {
                         break;
                     }
-                    if (currentNode.terminal && dp[i - 1]) {
+                    if (currentNode.terminal) {
                         dp[j] = true;
                     }
                 }
