@@ -3,8 +3,6 @@ package ru.praktikum.yandex.sprint08.fin.A;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import static java.lang.Character.isAlphabetic;
@@ -27,32 +25,27 @@ import static java.lang.Character.isDigit;
  * стопки и присоединить к компоненту наверху стопки.
  * 6. В конце мы вытаскиваем все компоненты строки из стопки и собираем их в единую строку.
  *
- * Для того чтобы определить максимальный префикс, достаточно отсортировать строки лексикографически и найти общий
- * префикс для первой и последней строки. Для этого будем по очереди сравнивать символы двух строк и добавлять
- * совпадающие в результат. Как только найден не совпадающий символ или как только мы дошли до конца наиболее короткой
- * из двух строк - значит подстрока найдена.
+ * Предположим, что первая строка является наибольшим общим префиксом и присвоим ее значение переменной bestPrefix.
+ * Прочтем вторую строку и найдем их наибольший префикс, запишем результат в переменную bestPrefix. Повторим до конца
+ * списка строк, каждый раз считывая по одной строке.
  *
  * --ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ--
- * При лексикографической сортировки на противоположных концах списка окажутся максимально отличающиеся друг от друга
- * строки. Их общий префикс и будет общим префиксом для всего набора строк.
+ * На каждом этапе мы будем улучшать результат, находя общий префикс уже найденного общего префикса и новой строки.
  *
  * --ВРЕМЕННАЯ СЛОЖНОСТЬ--
- * Временная сложность складывается из трех компонентов:
+ * Временная сложность складывается из двух компонентов:
  * 1. Распаковка строк: для распаковки нужно пройтись по всем символам каждой из запакованных строк. Т.о. Сложность
  * составит О(L), где L общее количество символов запакованных строк.
  *
- * 2. Сортировка. Стандартная реализация сортировки гарантирует сортировку не больше чем O(n log(n)), где n - количество
- * строк
+ * 2. Поиск префикса. Общий префикс не может быть длиннее чем самая короткая строка. В худшем случае строки будут равны
+ * между собой и будут максимально запакованы, тогда сложность составит O(2^n), где n - длина запакованной строки.
  *
- * 3. Поиск префикса. Общий префикс не может быть длиннее чем самая короткая строка, т.о. поиск займет не более О(K),
- * где K - длина самой короткой строки после распаковки
- *
- * Итого: O(L + n log(n) + K)
+ * Итого: O(L + 2^n)
  *
  * --ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ--
  * Пространственная сложность складывается из:
  * 1. Распакованных строк.
- * Запакованная строка выражена n символами. В худшем случае Запакованная строка будет иметь 1 буквенный символ, а
+ * Запакованная строка выражена n символами. В худшем случае запакованная строка будет иметь 1 буквенный символ, а
  * остальное будет потрачено на 9, '[' и ']'. Итого максимум запаковок M = (n - 1) / 3.
  * При распаковке:
  * 0. На нулевом этапе у нас 1 буквенный символ
@@ -70,31 +63,28 @@ import static java.lang.Character.isDigit;
  *
  */
 
-//Ссылка на посылку: https://contest.yandex.ru/contest/26133/run-report/105039769/
+//Ссылка на посылку: https://contest.yandex.ru/contest/26133/run-report/105128182/
 
 public class A {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int linesNumber = readInt(reader);
-            String[] packedStrings = readLines(reader, linesNumber);
+            String bestPrefix = unpackString(reader.readLine());
+            for (int i = 1; i < linesNumber; i++) {
+                String nextLine = unpackString(reader.readLine());
+                bestPrefix = getMaxPrefix(bestPrefix, nextLine);
+            }
 
-            System.out.println(getMaxPrefix(packedStrings));
+            System.out.println(bestPrefix);
         }
     }
 
-    private static String getMaxPrefix(String[] packedStrings) {
-        List<String> unpackedStrings = new ArrayList<>(packedStrings.length);
-        for (String packedString : packedStrings) {
-            unpackedStrings.add(unpackString(packedString));
-        }
-
-        unpackedStrings.sort(String::compareTo);
-
+    private static String getMaxPrefix(String A, String B) {
         StringBuilder maxPrefix = new StringBuilder();
-        int minLength = Math.min(unpackedStrings.get(0).length(), unpackedStrings.get(unpackedStrings.size() - 1).length());
+        int minLength = Math.min(A.length(), B.length());
         for (int i = 0; i < minLength; i++) {
-            if (unpackedStrings.get(0).charAt(i) == unpackedStrings.get(unpackedStrings.size() - 1).charAt(i)) {
-                maxPrefix.append(unpackedStrings.get(0).charAt(i));
+            if (A.charAt(i) == B.charAt(i)) {
+                maxPrefix.append(A.charAt(i));
             } else {
                 break;
             }
@@ -134,16 +124,6 @@ public class A {
         }
 
         return result.toString();
-    }
-
-    private static String[] readLines(BufferedReader reader, int linesNumber) throws IOException {
-        String[] result = new String[linesNumber];
-
-        for (int i = 0; i < linesNumber; i++) {
-            result[i] = reader.readLine();
-        }
-
-        return result;
     }
 
     private static int readInt(BufferedReader reader) throws IOException {
